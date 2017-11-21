@@ -5,7 +5,6 @@ from satori_ingestion.helper.parseconfig import GetConfig
 class Utils:
     def get_configuration(self, env_variable_name, config_key_list):
         cfg = GetConfig.get_config_file()
-        print(cfg)
         try:
             configuration = environ[env_variable_name]
         except KeyError:

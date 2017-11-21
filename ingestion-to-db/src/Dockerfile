@@ -5,7 +5,6 @@ ADD satori_ingestion /opt/target/satori_ingestion
 COPY config.yml /opt/target
 COPY setup.py /opt/target
 
-
 RUN chmod +x /opt/target/setup.py && cd /opt/target && python setup.py install
 RUN chmod +x /opt/target/satori_ingestion/docker/entrypoint.sh
 
