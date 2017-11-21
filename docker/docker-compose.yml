@@ -1,0 +1,54 @@
+version: '3'
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - '2181:2181'
+
+  kafka:
+    image: wurstmeister/kafka
+    ports:
+      - '9092:9092'
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: ${ADVERTISED_HOST}
+      KAFKA_CREATE_TOPICS: 'sqlite-source-SatoriBikeData:5:1'
+      KAFKA_ZOOKEEPER_CONNECT: ${ADVERTISED_HOST}:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - zookeeper
+
+  kafka-connect-source:
+    build:
+     context: ./
+    depends_on:
+      - kafka
+    ports:
+      - '8083:8083'
+      - '9090:9090'
+    environment:
+      BOOTSTRAP_SERVERS: ${ADVERTISED_HOST}:9092
+      GROUP_ID: 'kafka-connect-source'
+      KEY_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
+      VALUE_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
+      KEY_CONVERTER_SCHEMA_ENABLE: 'false'
+      VALUE_CONVERTER_SCHEMA_ENABLE: 'false'
+      OFFSET_FLUSH_INTERVAL_MS: '10000'
+      KEY_CONVERTER_SCHEMA_REGISTRY_URL: 'localhost'
+      VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'localhost'
+      CONNECTION_URL: 'jdbc:sqlite:/opt/db/satori.db'
+      INCREMENTING_COLUMN_NAME: 'key'
+    volumes:
+     - /Users/karl/Desktop/rio/01_big_data_lake/05_projects/01_kafka-streaming-bike-app:/opt/db
+
+  satori-ingestion:
+    build:
+      context: ../ingestion-to-db/src
+    depends_on:
+      - kafka
+    environment:
+      SATORI_DB_PATH: '/opt/db/satori.db'
+      SATORI_CHANNEL: 'NYC-Bike-Live-Station'
+      SATORI_ENDPOINT: 'wss://open-data.api.satori.com'
+    volumes:
+     - /Users/karl/Desktop/rio/01_big_data_lake/05_projects/01_kafka-streaming-bike-app:/opt/db
