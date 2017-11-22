@@ -1,12 +1,20 @@
-from os import environ
-from satori_ingestion.helper.parseconfig import GetConfig
+import os
+import yaml
 
 
 class Utils:
+    @staticmethod
+    def get_config_file(filename="config.yml", path=""):
+        config_file_path = os.path.expanduser(path)
+        print("Loading configFile: {}".format(config_file_path + filename))
+        with open(config_file_path + filename, 'r') as ymlfile:
+            cfg = yaml.safe_load(ymlfile)
+        return cfg
+
     def get_configuration(self, env_variable_name, config_key_list):
-        cfg = GetConfig.get_config_file()
+        cfg = self.get_config_file()
         try:
-            configuration = environ[env_variable_name]
+            configuration = os.environ[env_variable_name]
         except KeyError:
             configuration = self.__get_values_from_dict(config_key_list, cfg)
         return configuration

@@ -3,11 +3,10 @@
 import logging
 from satori.rtm.client import make_client, SubscriptionMode
 from satori_ingestion.subscription_observer import SubscriptionObserver
-from satori_ingestion.helper.parseconfig import GetConfig
 from satori_ingestion.helper.utils import Utils
 
 logging.basicConfig(level=logging.WARNING)
-CFG = GetConfig.get_config_file()
+CFG = Utils.get_config_file()
 channel = Utils().get_configuration('SATORI_CHANNEL', ['ingestor', 'channel'])
 endpoint = Utils().get_configuration('SATORI_ENDPOINT', ['ingestor', 'endpoint'])
 appkey = CFG['ingestor']['apikey']

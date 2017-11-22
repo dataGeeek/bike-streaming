@@ -1,9 +1,8 @@
 import sys
 from satori_ingestion.helper.database_manager import SimpleDatabase
-from satori_ingestion.helper.parseconfig import GetConfig
 from satori_ingestion.helper.utils import Utils
 
-CFG = GetConfig.get_config_file()
+CFG = Utils.get_config_file()
 
 
 class SubscriptionObserver(object):
