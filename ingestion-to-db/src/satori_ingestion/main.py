@@ -4,6 +4,7 @@ import logging
 from satori.rtm.client import make_client, SubscriptionMode
 from satori_ingestion.subscription_observer import SubscriptionObserver
 from satori_ingestion.helper.utils import Utils
+from time import sleep
 
 logging.basicConfig(level=logging.WARNING)
 CFG = Utils.get_config_file()
@@ -12,21 +13,26 @@ endpoint = Utils().get_configuration('SATORI_ENDPOINT', ['ingestor', 'endpoint']
 appkey = CFG['ingestor']['apikey']
 
 
-def main():
+class SatoriIngestion:
+    def __init__(self):
+        self.__CFG = Utils.get_config_file()
+        self.__channel = Utils().get_configuration('SATORI_CHANNEL', ['ingestor', 'channel'])
+        self.__endpoint = Utils().get_configuration('SATORI_ENDPOINT', ['ingestor', 'endpoint'])
+        self.__appkey = CFG['ingestor']['apikey']
 
-    with make_client(
-            endpoint=endpoint, appkey=appkey,
-            auth_delegate=None) as client:
-        subscription_observer = SubscriptionObserver(channel=channel)
-        client.subscribe(
-            channel,
-            SubscriptionMode.SIMPLE,
-            subscription_observer)
+    def main(self):
+        with make_client(
+                endpoint=self.__endpoint, appkey=self.__appkey,
+                auth_delegate=None) as client:
+            subscription_observer = SubscriptionObserver(channel=self.__channel)
+            client.subscribe(
+                channel,
+                SubscriptionMode.SIMPLE,
+                subscription_observer)
 
-        n = 0
-        while True:
-            n = n + 1
+            while True:
+                sleep(1)
 
 
 if __name__ == '__main__':
-    main()
+    SatoriIngestion().main()
