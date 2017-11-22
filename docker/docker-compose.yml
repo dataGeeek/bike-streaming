@@ -44,8 +44,6 @@ services:
   satori-ingestion:
     build:
       context: ../ingestion-to-db/src
-    depends_on:
-      - kafka
     environment:
       SATORI_DB_PATH: '/opt/db/satori.db'
       SATORI_CHANNEL: 'NYC-Bike-Live-Station'
