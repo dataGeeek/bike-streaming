@@ -9,6 +9,7 @@ __pycache__/
 .Python
 env/
 build/
+config.yml
 develop-eggs/
 dist/
 downloads/
@@ -97,4 +98,8 @@ ENV/
 # mypy
 .mypy_cache/
 .idea/
-*config.yaml
+.gradle/
+streaming-app/out/
+streaming-app/streaming-app.iml
+streaming-app/streaming-app.ipr
+streaming-app/streaming-app.iws
