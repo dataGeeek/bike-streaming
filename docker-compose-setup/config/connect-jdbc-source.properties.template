@@ -19,7 +19,7 @@
 # tasks to create:
 name=test-source-sqlite-jdbc-autoincrement
 connector.class=io.confluent.connect.jdbc.JdbcSourceConnector
-tasks.max=1
+tasks.max={TASKS_MAX}
 # The remaining configs are specific to the JDBC source connector. In this example, we connect to a
 # SQLite database stored in the file test.db, use and auto-incrementing column called 'id' to
 # detect new rows as they are added, and output to topics prefixed with 'test-sqlite-jdbc-', e.g.
