@@ -1,0 +1,39 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+group = 'de.datageeek.bikestreaming'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                'Implementation-Version': version,
+                'Main-Class': 'com.mkyong.DateUtils'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+artifacts {
+    archives fatJar
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+	kafkaVersion = '1.0.0'
+}
+
+dependencies {
+	compile("org.apache.kafka:kafka-clients:${kafkaVersion}")
+    compile("org.apache.kafka:kafka-streams:${kafkaVersion}")
+    compile("junit:junit:4.12")
+    compile("com.google.code.gson:gson:2.6.1")
+    compileOnly("org.projectlombok:lombok:1.16.18")
+}
