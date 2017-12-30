@@ -1,6 +1,7 @@
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from satori_ingestion.helper.utils import Utils
 import datetime
 
 
@@ -12,11 +13,12 @@ class DatabaseHandler:
         self._Session = sessionmaker(bind=self._engine)
         self._session = self._Session()
         self.__lastCommitTimestamp = datetime.datetime.now()
+        self.__satori_buffer_time = Utils().get_configuration('SATORI_BUFFER_TIME', ['ingestor', 'save_buffer_time'])
 
     def write_to_db(self, object):
         self._session.add(object)
         timestamp = datetime.datetime.now()
-        if (timestamp - self.__lastCommitTimestamp).total_seconds() > 60:
+        if (timestamp - self.__lastCommitTimestamp).total_seconds() > int(self.__satori_buffer_time):
             self.flush()
             self.__lastCommitTimestamp = timestamp
 
