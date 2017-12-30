@@ -11,7 +11,7 @@ services:
       - '9092:9092'
     environment:
       KAFKA_ADVERTISED_HOST_NAME: ${ADVERTISED_HOST}
-      KAFKA_CREATE_TOPICS: 'sqlite-source-SatoriBikeData:5:1'
+      KAFKA_CREATE_TOPICS: 'sqlite-source-SatoriBikeData:5:1,mapped:5:1,enriched:5:1,output:5:1'
       KAFKA_ZOOKEEPER_CONNECT: ${ADVERTISED_HOST}:2181
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -36,17 +36,19 @@ services:
       OFFSET_FLUSH_INTERVAL_MS: '10000'
       KEY_CONVERTER_SCHEMA_REGISTRY_URL: 'localhost'
       VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'localhost'
-      CONNECTION_URL: 'jdbc:sqlite:/opt/db/satori.db'
+      CONNECTION_URL: 'jdbc:sqlite:/opt/db/satori1.db'
       INCREMENTING_COLUMN_NAME: 'key'
+      TASKS_MAX: '1'
     volumes:
      - /Users/karl/Desktop/rio/01_big_data_lake/05_projects/01_kafka-streaming-bike-app:/opt/db
-
-  satori-ingestion:
-    build:
-      context: ../ingestion-to-db/src
-    environment:
-      SATORI_DB_PATH: '/opt/db/satori.db'
-      SATORI_CHANNEL: 'NYC-Bike-Live-Station'
-      SATORI_ENDPOINT: 'wss://open-data.api.satori.com'
-    volumes:
-     - /Users/karl/Desktop/rio/01_big_data_lake/05_projects/01_kafka-streaming-bike-app:/opt/db
+#
+#  satori-ingestion:
+#    build:
+#      context: ../ingestion-to-db/src
+#    environment:
+#      SATORI_DB_PATH: '/opt/db/satori2.db'
+#      SATORI_CHANNEL: 'NYC-Bike-Live-Station'
+#      SATORI_ENDPOINT: 'wss://open-data.api.satori.com'
+#      SATORI_BUFFER_TIME: '5'
+#    volumes:
+#     - /Users/karl/Desktop/rio/01_big_data_lake/05_projects/01_kafka-streaming-bike-app:/opt/db
