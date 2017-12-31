@@ -36,7 +36,7 @@ class StreamHandler {
 
         StreamsBuilder builder = new StreamsBuilder();
 
-        // Mappingfrom empty key to station id as key and writing to mapped topic
+        // Mapping from empty key to station id as key and writing to mapped topic
         KStream<String, NycBikeData> input = builder.stream(
                 INPUT_TOPIC,
                 Consumed.with(stringSerde, jsonSerdeInput)
@@ -48,7 +48,7 @@ class StreamHandler {
                 .peek((key, value) -> System.out.println("Key_input: " + key + " Value: "+ value))
                 .to(MAPPED_TOPIC, Produced.with(stringSerde, jsonSerdeInput));
 
-        //calculate avg number of available bikes for 1 hour windows, add timestamp for window star & end and add enriched time fields
+        //calculate avg number of available bikes for 1 hour tumbling windows, add timestamp for window start & end and add enriched time fields
         KStream<String, NycBikeData> avg = builder.stream(
                 MAPPED_TOPIC,
                 Consumed.with(stringSerde, jsonSerdeInput)
@@ -56,7 +56,7 @@ class StreamHandler {
         );
         avg
                 .groupByKey(Serialized.with(stringSerde, jsonSerdeInput))
-                .windowedBy(TimeWindows.of(60L * 60L * 1000L))
+                .windowedBy(TimeWindows.of(60L * 60L * 1000L).advanceBy(60L * 1000L))
                 .aggregate(NycBikeDataAggregated::new,
                         (key, value, NycBikeDataAggregated) -> NycBikeDataAggregated.add(value),
                         Materialized.with(stringSerde, jsonSerdeAvg))
@@ -64,6 +64,8 @@ class StreamHandler {
                 .toStream()
                 .map((key, value) -> new KeyValue<>(key.key(), value.setWindowStartAndEnd(key.window().start(), key.window().end())))
                 .mapValues(NycBikeDataAggregated::setDateFields)
+                //Filter stream so that only the earliest window for each key gets through (approximation for sliding window)
+                .filter(((key, value) -> value.getAggTimeEnd()== value.getAggTimeShouldEnd()))
                 .peek(((key, value) -> System.out.println("Key_avg: " + key + " Value: "+ value)))
                 .to(ENRICHED_TOPIC, Produced.with(stringSerde, jsonSerdeAvg));
 

@@ -2,7 +2,10 @@ package de.datageeek.bikestreaming.model;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 public @Data class NycBikeDataAggregated {
     private static final String TIME_STAMP_PATTERN = "yyyy-MM-dd hh:mm:ss a";
@@ -26,6 +29,7 @@ public @Data class NycBikeDataAggregated {
     private int count;
     private double avgAvailableBikes;
     private long aggTimeStart;
+    private long aggTimeShouldEnd;
     private long aggTimeEnd;
 
     public NycBikeDataAggregated add(NycBikeData value) {
@@ -57,6 +61,11 @@ public @Data class NycBikeDataAggregated {
         this.month = date.getMonth().toString();
         this.weekDay = date.getDayOfWeek().toString();
         this.hour = date.getHour();
+        //round-up to next min and convert it to millis from epoch
+        LocalDateTime roundToNextQuater = date.truncatedTo(ChronoUnit.MINUTES).plusMinutes(1);
+        ZoneId nyc = ZoneId.of("America/New_York");
+        ZonedDateTime timeNyc = ZonedDateTime.of(roundToNextQuater, nyc);
+        this.aggTimeShouldEnd = timeNyc.toInstant().toEpochMilli();
         return this;
     }
 
