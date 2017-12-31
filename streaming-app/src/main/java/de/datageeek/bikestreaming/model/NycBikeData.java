@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 public @Data class NycBikeData {
     private static final String TIME_STAMP_PATTERN = "yyyy-MM-dd hh:mm:ss a";
 
-    private int key;
+    private int recordId;
     private int id;
     private String stationName;
     private int availableDocks;

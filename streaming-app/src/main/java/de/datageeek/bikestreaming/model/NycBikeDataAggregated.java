@@ -10,7 +10,7 @@ import java.time.temporal.ChronoUnit;
 public @Data class NycBikeDataAggregated {
     private static final String TIME_STAMP_PATTERN = "yyyy-MM-dd hh:mm:ss a";
 
-    private int key;
+    private int recordId;
     private int id;
     private String stationName;
     private int availableDocks;
@@ -33,7 +33,7 @@ public @Data class NycBikeDataAggregated {
     private long aggTimeEnd;
 
     public NycBikeDataAggregated add(NycBikeData value) {
-        this.key = value.getKey();
+        this.recordId = value.getRecordId();
         this.id = value.getId();
         this.stationName = value.getStationName();
         this.availableDocks = value.getAvailableDocks();

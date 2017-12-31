@@ -31,7 +31,7 @@ class SimpleDatabase(DatabaseHandler):
 
     class DataModel(Base):
         __tablename__ = "SatoriBikeData"
-        key = Column(Integer, primary_key=True, autoincrement=True)
+        recordId = Column(Integer, primary_key=True, autoincrement=True)
         id = Column(INTEGER)
         stationName = Column(String)
         availableDocks = Column(INTEGER)
